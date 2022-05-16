@@ -3,6 +3,8 @@ module github.com/finest08/PubSubPublisher
 go 1.18
 
 require (
+	github.com/go-chi/chi v1.5.4
+	github.com/go-chi/cors v1.2.1
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.10.0
 	google.golang.org/grpc v1.46.0
 	google.golang.org/protobuf v1.27.1
