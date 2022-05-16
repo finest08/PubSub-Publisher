@@ -15,6 +15,8 @@ import (
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
 
+
+	// "github.com/finest08/PubSubPublisher/handler"
 	pb "github.com/finest08/PubSubPublisher/gen/proto/go/proto/person/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -32,13 +34,8 @@ type Person struct {
 var (
 	addr = flag.String("addr", "localhost:50051", "the address to connect to")
 	
-	p = Person{
-		FirstName: "Alice",
-		LastName:"Springfield",
-		Email:"spring@style.me",
-		Occupation: "Hairstylist", 
-		Age: "25",
-	}
+	p = Person{}
+
 )
 
 func main() {
@@ -59,18 +56,17 @@ func main() {
 	)
 
 	r.Route("/person", func(r chi.Router) {
-		r.Post("/", p.Publish)
+		r.Post("/", p.DecodeJson)
 	})
 
-	// start server ":"+os.Getenv("PORT")
+	// start server 
 	if err := http.ListenAndServe(":8080", r); err != nil {
 		fmt.Print(":"+os.Getenv("PORT"))
 		fmt.Print(err)
 	}
 }
 
-
-func (p *Person) Publish(w http.ResponseWriter, r *http.Request) {
+func (p *Person) DecodeJson(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == http.MethodOptions {
 		return
@@ -84,14 +80,12 @@ func (p *Person) Publish(w http.ResponseWriter, r *http.Request) {
 
 	req := &pb.PersonRequest{}
 	err = protojson.Unmarshal(reqByt, req)
-
-	msg, err := p.SendProto(req)
+	rsp, err := p.SendProto(req)
 
 	if err != nil {
 		w.Write([]byte(fmt.Sprintf("err %v", err)))
 	} else {
-		w.Write([]byte(fmt.Sprintf("%s", msg.GetMessage())))
-		// w.Write([]byte("done"))
+		w.Write([]byte(fmt.Sprintf("%s", rsp.GetMessage())))
 	}
 	
 }
