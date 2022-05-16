@@ -15,8 +15,6 @@ import (
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
 
-
-	// "github.com/finest08/PubSubPublisher/handler"
 	pb "github.com/finest08/PubSubPublisher/gen/proto/go/proto/person/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -24,11 +22,11 @@ import (
 )
 
 type Person struct {
-	FirstName  string `json:"firstName"`
-	LastName   string `json:"lastName"`
-	Email      string `json:"email"`
-	Occupation string `json:"occupation"`
-	Age        string `json:"age"`
+	FirstName  string 
+	LastName   string 
+	Email      string 
+	Occupation string 
+	Age        string 
 }
 
 var (
