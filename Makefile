@@ -4,6 +4,8 @@ proto:
 	cd proto && buf mod update
 	buf generate
 	buf build
+	cd proto && buf push
+
 .PHONY: run
 run:
 	dapr run \

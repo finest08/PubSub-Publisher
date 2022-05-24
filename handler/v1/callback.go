@@ -10,7 +10,7 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	pbpers "github.com/finest08/PubSubPublisher/gen/proto/go/proto/person/v1"
+	pbpers "github.com/finest08/PubSubPublisher/gen/proto/go/person/v1"
 )
 
 type CallbackServer struct {
@@ -26,15 +26,7 @@ func (p CallbackServer) ListTopicSubscriptions(ctx context.Context, in *emptypb.
 		Subscriptions: []*pb.TopicSubscription{{
 			PubsubName: "pubsub-publish",
 			Topic:      "mytopic",
-			// Routes: &pb.TopicRoutes{
-			// 	Rules: []*pb.TopicRule{
-			// 		{
-			// 			Match: `event.data.type == "update"`,
-			// 			Path:  "/update",
-			// 		},
-			// 	},
-			// 	Default: "/create",
-			// },
+			Routes:     &pb.TopicRoutes{Default: "/create"},
 		}},
 	}, nil
 }
@@ -43,7 +35,7 @@ func (p CallbackServer) ListTopicSubscriptions(ctx context.Context, in *emptypb.
 // Dapr sends published messages in a CloudEvents 0.3 envelope.
 func (p CallbackServer) OnTopicEvent(ctx context.Context, in *pb.TopicEventRequest) (*pb.TopicEventResponse, error) {
 
-	// fmt.Println("OnTopicEvent", in.Path, string(in.Data))
+	fmt.Println("OnTopicEvent:", in.Path, string(in.Data))
 	// json event data -> event.EventData
 	var per pbpers.Person
 	if err := protojson.Unmarshal(in.Data, &per); err != nil {
@@ -53,27 +45,13 @@ func (p CallbackServer) OnTopicEvent(ctx context.Context, in *pb.TopicEventReque
 
 	fmt.Println(&per)
 
-	// // extract payload (google.protobuf.Any) from data
-	// var pl event.IdentityPayload
-	// if err := data.Payload.UnmarshalTo(&pl); err != nil {
-	// 	return &pb.TopicEventResponse{Status: pb.TopicEventResponse_DROP},
-	// 		status.Errorf(codes.Aborted, "issue unmarshalling payload: %v", err)
-	// }
-
-	// switch in.Path {
-	// case "/create":
-		// create checks for the identity
-		// pl.Status == event.IdentityPayload_STATUS_CREATED
-		// if err := d.CheckServer.addChecks(pl.IdentityId, data.TenantId, data.UserId); err != nil {
-		// 	return &pb.TopicEventResponse{Status: pb.TopicEventResponse_DROP},
-		// 		status.Errorf(codes.Aborted, "issue creating checks: %v", err)
-		// }
-	// case "/update":
-		// update the specified check
-	// default:
-	// 	return &pb.TopicEventResponse{},
-	// 		status.Errorf(codes.Aborted, "unexpected path in OnTopicEvent: %s", in.Path)
-	// }
+switch in.Path {
+	case "/create":
+	case "/update":
+	default:
+		return &pb.TopicEventResponse{},
+			status.Errorf(codes.Aborted, "unexpected path in OnTopicEvent: %s", in.Path)
+	}
 
 	return &pb.TopicEventResponse{}, nil
 }

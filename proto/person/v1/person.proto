@@ -7,8 +7,13 @@ service PersonService {
   rpc Create(CreateRequest) returns (CreateResponse); 
 }
 
-message CreateRequest  { Person person = 1; }
-message CreateResponse { Person person = 1; }
+message CreateRequest  { 
+  Person person = 1; 
+}
+
+message CreateResponse { 
+  string message = 2;
+}
 
 message Person {
   string first_name = 1;
