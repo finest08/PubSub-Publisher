@@ -2,51 +2,49 @@
 package main
 
 import (
-	"fmt"
-	"net/http"
-	"os"
+	"log"
+	"net"
+	"time"
 
-	"github.com/go-chi/chi"
-	"github.com/go-chi/chi/middleware"
-	"github.com/go-chi/cors"
+	daprpb "github.com/dapr/dapr/pkg/proto/runtime/v1"
+	dapr "github.com/dapr/go-sdk/client"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 
 	"github.com/finest08/PubSubPublisher/handler/v1"
+	pb "github.com/finest08/PubSubPublisher/gen/proto/go/proto/person/v1"
 )
-
-type Person struct {
-	FirstName  string
-	LastName   string
-	Email      string
-	Occupation string
-	Age        string
-}
+  
 
 func main() {
-	r := chi.NewRouter()
-	r.Use(
-		middleware.Logger,
-		middleware.StripSlashes,
-		cors.Handler(cors.Options{
-			AllowedOrigins:   []string{"https://*", "http://*"},
-			AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS", "QUERY"},
-			AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
-			ExposedHeaders:   []string{"Link"},
-			AllowCredentials: true,
-			MaxAge:           300,
-			// Debug:            true,
-		}),
-	)
-
-	p := &handler.PersonServer{}
-	r.Route("/person", func(r chi.Router) {
-		r.Post("/", p.Person)
-	})
-
-	// start server
-	if err := http.ListenAndServe(":8080", r); err != nil {
-		fmt.Print(":" + os.Getenv("PORT"))
-		fmt.Print(err)
+	// initialise Dapr client using DAPR_GRPC_PORT env var
+	// N.B. sleep briefly to give the dapr service time to initialise
+	time.Sleep(2 * time.Second)
+	client, err := dapr.NewClient()
+	if err != nil {
+		log.Fatalf("failed to initialise Dapr client: %v", err)
 	}
+	defer client.Close()
+
+	grpcSrv := grpc.NewServer()
+	defer grpcSrv.Stop()         // stop server on exit
+	reflection.Register(grpcSrv) // for postman
+
+	h := &handler.PersonServer{
+		Dapr:  client,
+	}
+	pb.RegisterPersonServiceServer(grpcSrv, h)
+
+	ch := handler.CallbackServer{}
+
+	daprpb.RegisterAppCallbackServer(grpcSrv, ch)
+
+	lis, err := net.Listen("tcp", ":8080")
+	if err != nil {
+		log.Fatalln("Failed to listen:", err)
+	}
+	if err := grpcSrv.Serve(lis); err != nil {
+		log.Fatalf("failed to serve: %s", err)
+	}
+
 }
-
-
