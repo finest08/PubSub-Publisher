@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package proto.person.v1;
+package person.v1;
 
 // The person service definition.
 service PersonService {

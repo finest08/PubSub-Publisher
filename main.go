@@ -39,7 +39,7 @@ func main() {
 
 	daprpb.RegisterAppCallbackServer(grpcSrv, ch)
 
-	lis, err := net.Listen("tcp", ":8080")
+	lis, err := net.Listen("tcp", ":8081")
 	if err != nil {
 		log.Fatalln("Failed to listen:", err)
 	}

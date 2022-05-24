@@ -10,7 +10,7 @@ proto:
 run:
 	dapr run \
 		--app-id pubsubpublisher \
-		--app-port 8080 \
+		--app-port 8081 \
 		--app-protocol grpc \
 		--config ./.dapr/config.yaml \
 		--components-path ./.dapr/components \
@@ -18,8 +18,8 @@ run:
 
 .PHONY: kill
 kill:
-	lsof -P -i TCP -s TCP:LISTEN | grep 8080 | awk '{print $2}' | { read pid; kill -9 ${pid}; }
-	lsof -P -i TCP -s TCP:LISTEN | grep 9090 | awk '{print $2}' | { read pid; kill -9 ${pid}; }
+	lsof -P -i TCP -s TCP:LISTEN | grep 8081 | awk '{print $2}' | { read pid; kill -9 ${pid}; }
+	lsof -P -i TCP -s TCP:LISTEN | grep 9091 | awk '{print $2}' | { read pid; kill -9 ${pid}; }
 .PHONY: test
 test:
 	go test -v ./handler/...
