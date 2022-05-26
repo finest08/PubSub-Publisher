@@ -4,10 +4,10 @@ package person.v1;
 
 // The person service definition.
 service PersonService {
-  rpc Create(CreateRequest) returns (CreateResponse); 
+  rpc Create(CreateRequest) returns (CreateResponse);
 }
 
-message CreateRequest  { 
+message CreateRequest  {
   Person person = 1; 
 }
 
@@ -20,3 +20,4 @@ message Person {
   string last_name = 2;
   string email = 3;
 }
+

@@ -25,7 +25,7 @@ func (p CallbackServer) ListTopicSubscriptions(ctx context.Context, in *emptypb.
 	return &pb.ListTopicSubscriptionsResponse{
 		Subscriptions: []*pb.TopicSubscription{{
 			PubsubName: "pubsub-publish",
-			Topic:      "mytopic",
+			Topic:      "restopic",
 			Routes:     &pb.TopicRoutes{Default: "/create"},
 		}},
 	}, nil

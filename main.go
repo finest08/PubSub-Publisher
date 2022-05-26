@@ -1,4 +1,3 @@
-// Package main implements a client for Person service.
 package main
 
 import (
@@ -15,7 +14,6 @@ import (
 	pb "github.com/finest08/PubSubPublisher/gen/proto/go/person/v1"
 )
   
-
 func main() {
 	// initialise Dapr client using DAPR_GRPC_PORT env var
 	// N.B. sleep briefly to give the dapr service time to initialise
@@ -36,7 +34,6 @@ func main() {
 	pb.RegisterPersonServiceServer(grpcSrv, h)
 
 	ch := handler.CallbackServer{}
-
 	daprpb.RegisterAppCallbackServer(grpcSrv, ch)
 
 	lis, err := net.Listen("tcp", ":8081")
