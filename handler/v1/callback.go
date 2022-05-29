@@ -10,7 +10,7 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	pbpers "github.com/finest08/PubSubPublisher/gen/proto/go/person/v1"
+	pbpers "github.com/finest08/PubSubPublisher/gen/proto/go/proto/person/v1"
 )
 
 type CallbackServer struct {
@@ -25,10 +25,25 @@ func (p CallbackServer) ListTopicSubscriptions(ctx context.Context, in *emptypb.
 	return &pb.ListTopicSubscriptionsResponse{
 		Subscriptions: []*pb.TopicSubscription{{
 			PubsubName: "pubsub-publish",
-			Topic:      "restopic",
+			Topic:      "res-topic",
 			Routes:     &pb.TopicRoutes{Default: "/create"},
 		}},
 	}, nil
+	// return &pb.ListTopicSubscriptionsResponse{
+	// 		Subscriptions: []*pb.TopicSubscription{{
+	// 			PubsubName: "pubsub-publish",
+	// 			Topic:      "res-topic",
+	// 			Routes: &pb.TopicRoutes{
+	// 				Rules: []*pb.TopicRule{
+	// 					{
+	// 						Match: `event.data.type == "person.create"`,
+	// 						Path:  "/create",
+	// 					},
+	// 				},
+	// 				Default: "/update",
+	// 			},
+	// 		}},
+	// 	}, nil
 }
 
 // OnTopicEvent is fired for events subscribed to.

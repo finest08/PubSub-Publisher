@@ -11,7 +11,7 @@ import (
 	"google.golang.org/grpc/reflection"
 
 	"github.com/finest08/PubSubPublisher/handler/v1"
-	pb "github.com/finest08/PubSubPublisher/gen/proto/go/person/v1"
+	pb "github.com/finest08/PubSubPublisher/gen/proto/go/proto/person/v1"
 )
   
 func main() {

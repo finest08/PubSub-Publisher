@@ -8,7 +8,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	pb "github.com/finest08/PubSubPublisher/gen/proto/go/person/v1"
+	pb "github.com/finest08/PubSubPublisher/gen/proto/go/proto/person/v1"
 )
 
 type PersonServer struct {
@@ -23,12 +23,28 @@ func (p PersonServer) Create(ctx context.Context, req *pb.CreateRequest) (*pb.Cr
 	// publish event
 	if err := p.Dapr.PublishEvent(
 		context.Background(),
-		"pubsub-publish", "mytopic", person,
+		"pubsub-publish", "my-topic", person,
 		dapr.PublishEventWithContentType("application/json"),
 		
 	); err != nil {
 		return &pb.CreateResponse{}, status.Errorf(codes.Aborted, "%s", "error publishing event")
 	}
-	fmt.Println("Published event: ", person.FirstName)
+	fmt.Println("Published event: ", "Create: ",person.FirstName)
 	return &pb.CreateResponse{Message: "Submission for " + person.FirstName + " " + person.LastName + " posted successfully."}, nil
+}
+
+func (p PersonServer) Update(ctx context.Context, req *pb.UpdateRequest) (*pb.UpdateResponse, error){
+	person := req.Person
+	
+	// publish event
+	if err := p.Dapr.PublishEvent(
+		context.Background(),
+		"pubsub-publish", "my-topic", person,
+		dapr.PublishEventWithContentType("application/json"),
+		
+	); err != nil {
+		return &pb.UpdateResponse{}, status.Errorf(codes.Aborted, "%s", "error publishing event")
+	}
+	fmt.Println("Published event: ", "Update: ",person.FirstName)
+	return &pb.UpdateResponse{Message: "Update Submission for " + person.FirstName + " " + person.LastName + " successful"}, nil
 }
